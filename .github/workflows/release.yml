@@ -34,6 +34,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          npm install
           npx --yes @electron/packager . Zaslon19_Bunker_Full --platform=win32 --arch=x64 --out=dist_electron --overwrite --ignore="^/(release|native_win|dist_electron)"
           cp release/Zaslon19_Bunker.exe dist_electron/Zaslon19_Bunker_Full-win32-x64/Zaslon19_Launcher.exe
           cp assets/icon.ico dist_electron/Zaslon19_Bunker_Full-win32-x64/icon.ico
