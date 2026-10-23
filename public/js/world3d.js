@@ -62,6 +62,7 @@ class World3D {
 
     this.raycaster = new THREE.Raycaster();
     this.hoveredTarget = null;
+    this.texLoader = new THREE.TextureLoader();
 
     this.initLights();
     this.buildBunkerWorld();
@@ -70,6 +71,15 @@ class World3D {
     this.setZone("bunker");
 
     window.addEventListener("resize", () => this.onResize());
+  }
+
+  loadTex(filename, repeatX = 1, repeatY = 1) {
+    const src = (window.EMBEDDED_ASSETS && window.EMBEDDED_ASSETS[filename]) || `assets/textures/${filename}`;
+    const tex = this.texLoader.load(src);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(repeatX, repeatY);
+    return tex;
   }
 
   onResize() {
@@ -100,7 +110,8 @@ class World3D {
   // ==========================================================================
   buildBunkerWorld() {
     const floorMat = new THREE.MeshStandardMaterial({
-      color: 0x1e2520,
+      map: this.loadTex("bunker_floor.png", 14, 12),
+      color: 0x9ca3af,
       roughness: 0.85,
       metalness: 0.25
     });
@@ -109,7 +120,8 @@ class World3D {
       roughness: 0.9
     });
     const wallMat = new THREE.MeshStandardMaterial({
-      color: 0x2a342d,
+      map: this.loadTex("bunker_wall.png", 3, 1),
+      color: 0x9ca3af,
       roughness: 0.75,
       metalness: 0.3
     });
@@ -369,7 +381,8 @@ class World3D {
     group.position.set(x, 0, z);
 
     const doorMat = new THREE.MeshStandardMaterial({
-      color: 0x374151,
+      map: this.loadTex("blast_door.png", 1, 1),
+      color: 0xcbd5e1,
       metalness: 0.75,
       roughness: 0.35
     });
@@ -474,7 +487,8 @@ class World3D {
   buildSurfaceWorld() {
     // Snow & Ash Ground Plane
     const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x64748b,
+      map: this.loadTex("snow_ash.png", 36, 36),
+      color: 0x94a3b8,
       roughness: 0.95,
       metalness: 0.05
     });
@@ -530,10 +544,11 @@ class World3D {
       { x: -32, z: 38, w: 12, h: 11, d: 9, color: 0x3e4c59, name: "Руины Панельного Дома" }
     ];
 
+    const bldgTex = this.loadTex("building_ruins.png", 2, 2);
     buildings.forEach((b) => {
       const bMesh = new THREE.Mesh(
         new THREE.BoxGeometry(b.w, b.h, b.d),
-        new THREE.MeshStandardMaterial({ color: b.color, roughness: 0.9 })
+        new THREE.MeshStandardMaterial({ map: bldgTex, color: 0xcbd5e1, roughness: 0.9 })
       );
       bMesh.position.set(b.x, b.h / 2, b.z);
       bMesh.castShadow = true;
@@ -865,7 +880,12 @@ class World3D {
 
     const box = new THREE.Mesh(
       new THREE.BoxGeometry(1.15, 0.75, 0.85),
-      new THREE.MeshStandardMaterial({ color: 0x3f6212, roughness: 0.7, metalness: 0.3 })
+      new THREE.MeshStandardMaterial({
+        map: this.loadTex("crate_military.png", 1, 1),
+        color: 0xd1d5db,
+        roughness: 0.7,
+        metalness: 0.3
+      })
     );
     box.position.y = 0.38;
     g.add(box);

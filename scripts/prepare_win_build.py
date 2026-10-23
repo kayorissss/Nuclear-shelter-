@@ -19,6 +19,21 @@ os.makedirs("native_win", exist_ok=True)
 with open("public/assets/icon.png", "rb") as f:
     icon_b64 = "data:image/png;base64," + base64.b64encode(f.read()).decode("ascii")
 
+embedded_assets = {}
+for tex_name in os.listdir("public/assets/textures"):
+    p = os.path.join("public/assets/textures", tex_name)
+    if os.path.isfile(p):
+        with open(p, "rb") as f:
+            embedded_assets[tex_name] = "data:image/png;base64," + base64.b64encode(f.read()).decode("ascii")
+
+for aud_name in os.listdir("public/assets/audio"):
+    p = os.path.join("public/assets/audio", aud_name)
+    if os.path.isfile(p):
+        with open(p, "rb") as f:
+            embedded_assets[aud_name] = "data:audio/wav;base64," + base64.b64encode(f.read()).decode("ascii")
+
+embedded_js = "window.EMBEDDED_ASSETS = " + json.dumps(embedded_assets) + ";\n"
+
 with open("public/css/style.css", "r", encoding="utf-8") as f:
     css = f.read()
 
@@ -30,7 +45,7 @@ js_files = [
     "public/js/world3d.js",
     "public/js/game.js",
 ]
-js_combined = []
+js_combined = [embedded_js]
 for jf in js_files:
     with open(jf, "r", encoding="utf-8") as f:
         js_combined.append(f"/* === {jf} === */\n" + f.read())

@@ -1,4 +1,4 @@
-name: Attach Release Assets
+name: Build and Attach Release Assets
 
 on:
   push:
@@ -10,18 +10,18 @@ permissions:
   contents: write
 
 jobs:
-  upload-release-assets:
+  upload-native-release-assets:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Upload EXE and ZIP to GitHub Release v1.0.0
+      - name: Upload Native Win64 EXE and ZIP to GitHub Release v1.0.0 Assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if ! gh release view v1.0.0 >/dev/null 2>&1; then
-            gh release create v1.0.0 --title "☢ БУНКЕР «ЗАСЛОН-19»: ПЕПЕЛ УРАЛА — v1.0.0" --notes "Автоматическая сборка релиза"
+            gh release create v1.0.0 --title "☢ БУНКЕР «ЗАСЛОН-19»: ПЕПЕЛ УРАЛА — v1.0.0 (Windows .EXE + 3D/2D Release)" --notes "Релиз игры"
           fi
           gh release upload v1.0.0 \
             release/Zaslon19_Bunker.exe \
@@ -29,3 +29,25 @@ jobs:
             release/Zaslon19_Standalone.html \
             assets/icon.ico \
             --clobber
+
+  build-full-electron-win64:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build Full Standalone Electron Win64 EXE (~95 MB with bundled Chromium 3D engine)
+        run: |
+          npm install
+          npx --yes electron-builder --win portable --x64
+
+      - name: Upload Full Standalone Engine EXE to GitHub Release v1.0.0 Assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload v1.0.0 dist/Zaslon19_Full_Engine_Win64.exe --clobber

@@ -1,23 +1,34 @@
 {
-  "name": "nuclear-shelter-",
+  "name": "zaslon19-bunker",
+  "productName": "Zaslon19_Bunker",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "БУНКЕР ЗАСЛОН-19: ПЕПЕЛ УРАЛА — 3D+2D выживание в убежище в России",
+  "main": "electron-main.js",
+  "author": "Zaslon-19 Studio",
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kayorissss/Nuclear-shelter-.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/kayorissss/Nuclear-shelter-/issues"
-  },
-  "homepage": "https://github.com/kayorissss/Nuclear-shelter-#readme",
   "dependencies": {
     "three": "^0.160.0"
+  },
+  "build": {
+    "appId": "ru.zaslon19.bunker",
+    "productName": "Zaslon19_Bunker_Full",
+    "files": [
+      "electron-main.js",
+      "public/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        "portable",
+        "zip"
+      ]
+    },
+    "portable": {
+      "artifactName": "Zaslon19_Full_Engine_Win64.exe"
+    }
   }
 }

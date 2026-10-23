@@ -14,6 +14,7 @@ class SoundEngine {
   init() {
     if (this.ctx) {
       if (this.ctx.state === "suspended") this.ctx.resume();
+      this.startAmbientLoop();
       return;
     }
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -22,12 +23,25 @@ class SoundEngine {
     this.masterGain = this.ctx.createGain();
     this.masterGain.gain.value = 0.45;
     this.masterGain.connect(this.ctx.destination);
+    this.startAmbientLoop();
+  }
+
+  startAmbientLoop() {
+    if (this.ambientEl) return;
+    const src = (window.EMBEDDED_ASSETS && window.EMBEDDED_ASSETS["bunker_ambient.wav"]) || "assets/audio/bunker_ambient.wav";
+    this.ambientEl = new Audio(src);
+    this.ambientEl.loop = true;
+    this.ambientEl.volume = this.muted ? 0 : 0.25;
+    this.ambientEl.play().catch(() => {});
   }
 
   toggleMute() {
     this.muted = !this.muted;
     if (this.masterGain) {
       this.masterGain.gain.value = this.muted ? 0 : 0.45;
+    }
+    if (this.ambientEl) {
+      this.ambientEl.volume = this.muted ? 0 : 0.25;
     }
     return this.muted;
   }
