@@ -1,7 +1,3 @@
 node_modules/
 *.pdb
-release/*.zip
-release/*.exe
-release/*.dll
-release/*.html
 native_win/WebView2Loader.dll
