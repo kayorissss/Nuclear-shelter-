@@ -12,6 +12,10 @@
   "dependencies": {
     "three": "^0.160.0"
   },
+  "devDependencies": {
+    "electron": "^29.1.0",
+    "electron-builder": "^24.13.3"
+  },
   "build": {
     "appId": "ru.zaslon19.bunker",
     "productName": "Zaslon19_Bunker_Full",

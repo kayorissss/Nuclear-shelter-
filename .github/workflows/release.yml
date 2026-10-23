@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  upload-native-release-assets:
+  upload-release-assets:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -30,24 +30,13 @@ jobs:
             assets/icon.ico \
             --clobber
 
-  build-full-electron-win64:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build Full Standalone Electron Win64 EXE (~95 MB with bundled Chromium 3D engine)
-        run: |
-          npm install
-          npx --yes electron-builder --win portable --x64
-
-      - name: Upload Full Standalone Engine EXE to GitHub Release v1.0.0 Assets
+      - name: Build Full Standalone Win64 Electron Bundle (~105 MB) and Upload to Release Assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload v1.0.0 dist/Zaslon19_Full_Engine_Win64.exe --clobber
+          npx --yes @electron/packager . Zaslon19_Bunker_Full --platform=win32 --arch=x64 --out=dist_electron --overwrite --ignore="^/(release|native_win|dist_electron)"
+          cp release/Zaslon19_Bunker.exe dist_electron/Zaslon19_Bunker_Full-win32-x64/Zaslon19_Launcher.exe
+          cp assets/icon.ico dist_electron/Zaslon19_Bunker_Full-win32-x64/icon.ico
+          cd dist_electron && zip -r -6 ../Zaslon19_Full_Engine_Win64_v1.0.0.zip Zaslon19_Bunker_Full-win32-x64
+          cd ..
+          gh release upload v1.0.0 Zaslon19_Full_Engine_Win64_v1.0.0.zip --clobber
