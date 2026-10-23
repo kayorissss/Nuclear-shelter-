@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>БУНКЕР «ЗАСЛОН-19»: ПЕПЕЛ УРАЛА</title>
+  <link rel="icon" type="image/png" href="assets/icon.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- ========================================================================
+       КАСТОМНАЯ РАМКА ОКНА ИГРЫ (Заменяет стандартный белый заголовок .exe)
+       ======================================================================== -->
+  <header id="custom-window-frame">
+    <div id="window-drag-region" title="Перетащите заголовок для перемещения окна">
+      <img src="assets/icon.png" alt="Z-19" class="win-app-icon" />
+      <span class="win-title-badge">☢ БУНКЕР «ЗАСЛОН-19»: ПЕПЕЛ УРАЛА [ОС-КРЕМНИЙ v1.0]</span>
+      <div class="win-hazard-strip"></div>
+      <span id="titlebar-telemetry">ОБЪЕКТ ГО И ЧС РФ №19 // ГЛУБИНА -64М // ШТАТНЫЙ РЕЖИМ</span>
+    </div>
+
+    <div class="win-controls-group">
+      <button class="titlebar-quick-btn" onclick="window.GAME && window.GAME.saveGame()">💾 СОХРАНИТЬ</button>
+      <button class="titlebar-quick-btn" id="btn-mute-sfx" onclick="const m = window.SFX.toggleMute(); this.textContent = m ? '🔇 ЗВУК ВЫКЛ' : '🔊 ЗВУК ВКЛ';">🔊 ЗВУК ВКЛ</button>
+      <button class="win-ctrl-btn" id="win-btn-min" title="Свернуть окно">—</button>
+      <button class="win-ctrl-btn" id="win-btn-max" title="Развернуть / Оконный режим">□</button>
+      <button class="win-ctrl-btn win-close" id="win-btn-close" title="Сохранить и закрыть">✕</button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       3D ВЬЮПОРТ (Three.js: Бункер, НПС, Поверхность, Мутанты, Оружие)
+       ======================================================================== -->
+  <div id="viewport-3d"></div>
+
+  <!-- ========================================================================
+       ГЛАВНОЕ МЕНЮ ИГРЫ
+       ======================================================================== -->
+  <section id="main-menu">
+    <div class="menu-container">
+      <div>
+        <div class="menu-header-tag">СЕКРЕТНЫЙ ПРОТОКОЛ РХБЗ // УРАЛЬСКИЙ ВОЕННЫЙ ОКРУГ</div>
+        <h1 class="menu-title">БУНКЕР «ЗАСЛОН-19»<br/>ПЕПЕЛ УРАЛА</h1>
+        <p class="menu-subtitle">
+          3D + 2D симулятор выживания человечества в подземном убежище в России после глобального ядерного удара.
+          Исследуйте отсеки бункера в 3D, следите за теплом (холод/жар), едой, водой, радиацией и фильтрами противогаза,
+          общайтесь с выжившими НПС, совершайте вылазки в ядерную зиму, сражайтесь с мутантами, изучайте карту,
+          крафтите оружие и реставрируйте довоенную «Старину».
+        </p>
+
+        <div class="menu-btn-stack">
+          <button class="menu-btn primary" onclick="window.GAME.startNewGameWithCutscene()">
+            ☢ НАЧАТЬ ИГРУ (СМОТРЕТЬ НАЧАЛЬНУЮ КАТ-СЦЕНУ)
+          </button>
+          <button class="menu-btn" onclick="window.GAME.startQuickGameSkipCutscene()">
+            ⚡ БЫСТРЫЙ ВХОД В БУНКЕР (БЕЗ КАТ-СЦЕНЫ)
+          </button>
+          <button class="menu-btn" onclick="window.GAME.loadGame()">
+            💾 ПРОДОЛЖИТЬ (ЗАГРУЗИТЬ СОХРАНЕНИЕ)
+          </button>
+          <button class="menu-btn" onclick="document.getElementById('main-menu').classList.add('hidden'); window.GAME.started = true; document.getElementById('hud-layer').classList.remove('hidden'); window.GAME.toggleModal('codex');">
+            📖 СЮЖЕТ, БЕСТИАРИЙ МУТАНТОВ И СПРАВОЧНИК
+          </button>
+        </div>
+      </div>
+
+      <div class="dossier-card">
+        <div class="dossier-title">📁 ЛИЧНОЕ ДЕЛО ГЛАВНОГО ГЕРОЯ</div>
+        <p><b>ФИО:</b> Волков Артём Сергеевич</p>
+        <p><b>Пол / Возраст:</b> Мужчина, 28 лет</p>
+        <p><b>Специализация:</b> Старший инженер РХБЗ и систем жизнеобеспечения</p>
+        <p><b>Объект приписки:</b> Бункер «Заслон-19» (Средний Урал, -64 м)</p>
+        <hr class="bunker-hr" />
+        <div class="dossier-title">⌨️ ПАМЯТКА УПРАВЛЕНИЯ (3D + 2D)</div>
+        <p>• <b>[W, A, S, D]</b> — Передвижение в 3D | <b>[Shift]</b> — Бег | <b>[Пробел]</b> — Прыжок</p>
+        <p>• <b>[Мышь]</b> — Осмотр и прицел | <b>[ЛКМ]</b> — Стрельба / Удар</p>
+        <p>• <b>[R]</b> — Перезарядка оружия</p>
+        <p>• <b>[E]</b> — Открыть гермодвери, подобрать лут, говорить с НПС, верстак, выйти на улицу</p>
+        <p>• <b>[G]</b> — Надеть/снять противогаз | <b>[F]</b> — Заменить фильтр ФГП-130</p>
+        <p>• <b>[I / Tab]</b> — Инвентарь, Костюмы, Оружие, Патроны</p>
+        <p>• <b>[C]</b> — Крафт, Ремонт и реставрация «Старины»</p>
+        <p>• <b>[M]</b> — Карта сектора (Туман войны) | <b>[J]</b> — Сюжет и Бестиарий</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       НАЧАЛЬНАЯ КАТ-СЦЕНА (Что произошло, кто ударил, сколько выжило,
+       боеголовка летит туда, где главный герой — мужчина 28 лет)
+       ======================================================================== -->
+  <section id="cutscene-screen" class="hidden">
+    <canvas id="cutscene-canvas"></canvas>
+    <div class="cutscene-overlay-box">
+      <div id="cs-code">СВОДКА СПРН</div>
+      <div id="cs-title">ЗАГРУЗКА...</div>
+      <div id="cs-subtitle"></div>
+      <div id="cs-stats"></div>
+      <div class="cs-controls-row">
+        <span id="cs-step-indicator" style="font-size:12px;color:#94a3b8;">ЭПИЗОД 1 ИЗ 5</span>
+        <div class="cs-progress-bar">
+          <div id="cs-progress-fill"></div>
+        </div>
+        <button class="bunker-btn" onclick="window.GAME.cutscene.nextSlide()">ДАЛЕЕ ▸</button>
+        <button class="bunker-btn" onclick="window.GAME.cutscene.finish()">ПРОПУСТИТЬ В БУНКЕР ⏭</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       2D ТАКТИЧЕСКИЙ ИНТЕРФЕЙС (HUD) ПОВЕРХ 3D МИРА
+       ======================================================================== -->
+  <section id="hud-layer" class="hidden">
+    <!-- Визор противогаза [G] -->
+    <div id="gasmask-overlay" class="hidden"></div>
+
+    <!-- Сюжетные задания и подсказки (Слева сверху) -->
+    <div class="hud-quest-box">
+      <div id="hud-chapter-title">ГЛАВА 1: «ЧЕТЫРЕ СЕКУНДЫ ДО ПЕПЛА»</div>
+      <div id="hud-objectives-list"></div>
+      <div id="hud-hint-banner">
+        ⌨️ УПРАВЛЕНИЕ: [WASD] — движение, [R] — перезарядка, [E] — открыть гермодвери / подобрать / говорить, [G] — противогаз.
+      </div>
+    </div>
+
+    <!-- Лента событий -->
+    <div id="notification-feed"></div>
+
+    <!-- Мини-карта с Туманом Войны + Кнопки разделов (Справа сверху) -->
+    <div class="hud-minimap-box hud-interactive">
+      <div class="minimap-header">РАДАР / МИНИ-КАРТА [M]</div>
+      <canvas id="minimap-canvas" width="195" height="195"></canvas>
+      <div class="hud-menu-buttons">
+        <button class="bunker-btn" onclick="window.GAME.toggleModal('inventory')">[I] ИНВЕНТАРЬ</button>
+        <button class="bunker-btn" onclick="window.GAME.toggleModal('craft')">[C] КРАФТ/РЕМ</button>
+        <button class="bunker-btn" onclick="window.GAME.toggleModal('npcs')">[N] БУНКЕР/НПС</button>
+        <button class="bunker-btn" onclick="window.GAME.toggleModal('map')">[M] КАРТА</button>
+        <button class="bunker-btn" style="grid-column: span 2;" onclick="window.GAME.toggleModal('codex')">[J] СЮЖЕТ И МУТАНТЫ</button>
+      </div>
+    </div>
+
+    <!-- Центральный прицел, подсказка [E] и сканер ХП/Урона мутантов -->
+    <div id="center-reticle-wrap">
+      <div class="reticle-cross"></div>
+      <div id="crosshair-prompt" class="hidden">[E] Взаимодействовать</div>
+      <div id="enemy-scanner-hud" class="hidden">
+        <div id="scan-enemy-name">🐺 Радио-Волк</div>
+        <div id="scan-enemy-stats">ХП: 95/95 | УРОН: 16 ед.</div>
+        <div class="scan-bar-bg"><div id="scan-enemy-bar" style="width:100%"></div></div>
+      </div>
+      <div id="hit-marker" class="hidden">💥 -30 ХП</div>
+    </div>
+
+    <!-- Показатели жизнедеятельности (Слева снизу: ХП, Еда, Вода, Холод/Жар, Радиация, Фильтр) -->
+    <div class="hud-vitals-box">
+      <div class="vital-row">
+        <div class="vital-label-line"><span>❤️ ЗДОРОВЬЕ (АРТЁМ, 28 ЛЕТ)</span><b id="val-hp">100/100</b></div>
+        <div class="vital-bar-bg"><div id="bar-hp" class="vital-bar-fill" style="width:100%;background:#ef4444;"></div></div>
+      </div>
+      <div class="vital-row">
+        <div class="vital-label-line"><span>🥫 ЕДА (СЫТОСТЬ)</span><b id="val-hunger">88%</b></div>
+        <div class="vital-bar-bg"><div id="bar-hunger" class="vital-bar-fill" style="width:88%;background:#f59e0b;"></div></div>
+      </div>
+      <div class="vital-row">
+        <div class="vital-label-line"><span>💧 ВОДА (ЖАЖДА)</span><b id="val-thirst">86%</b></div>
+        <div class="vital-bar-bg"><div id="bar-thirst" class="vital-bar-fill" style="width:86%;background:#38bdf8;"></div></div>
+      </div>
+      <div class="vital-row">
+        <div class="vital-label-line"><span>🌡️ ТЕМПЕРАТУРА (ХОЛОД / ЖАР)</span><b id="val-temp">36.6°C</b></div>
+        <div class="vital-bar-bg"><div id="bar-temp" class="vital-bar-fill" style="width:50%;background:linear-gradient(90deg,#38bdf8,#4ade80,#ef4444);"></div></div>
+      </div>
+      <div class="vital-row">
+        <div class="vital-label-line"><span>☢️ РАДИАЦИЯ (ДОЗИМЕТР)</span><b id="val-rad">4 мЗв</b></div>
+        <div class="vital-bar-bg"><div id="bar-rad" class="vital-bar-fill" style="width:4%;background:#a3e635;"></div></div>
+      </div>
+      <div class="vital-row">
+        <div class="vital-label-line"><span>😷 ПРОТИВОГАЗ [G] / ФИЛЬТР [F]</span><b id="val-filter">100%</b></div>
+        <div class="vital-bar-bg"><div id="bar-filter" class="vital-bar-fill" style="width:100%;background:#10b981;"></div></div>
+      </div>
+    </div>
+
+    <!-- Оружие, патроны, костюм и быстрые слоты (Справа снизу) -->
+    <div class="hud-weapon-box hud-interactive">
+      <div id="hud-wpn-name">🔫 Пистолет Макарова (ПМ 9×18)</div>
+      <div id="hud-wpn-ammo">8 / 32 (9×18 мм)</div>
+      <div id="hud-wpn-stats">Урон: 30 ед. | Состояние: 100%</div>
+      <div id="hud-suit-info">🧥 Потёртая тех-куртка «Заслон»</div>
+      <div class="quick-slots-row">
+        <div class="quick-slot-pill" onclick="window.GAME.cycleWeaponSlot(0)" style="cursor:pointer">[1] Монтировка</div>
+        <div class="quick-slot-pill" onclick="window.GAME.cycleWeaponSlot(1)" style="cursor:pointer">[2] Огнестрел</div>
+        <div class="quick-slot-pill" onclick="window.GAME.quickUseItem(['med_ai4','med_bandage'])" style="cursor:pointer">[3] Аптечка</div>
+        <div class="quick-slot-pill" onclick="window.GAME.quickUseItem(['food_soup','food_irp','food_tushonka'])" style="cursor:pointer">[4] Еда</div>
+        <div class="quick-slot-pill" onclick="window.GAME.quickUseItem(['water_tea','water_clean','med_cooling'])" style="cursor:pointer">[5] Вода</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       МОДАЛЬНОЕ ОКНО ТЕРМИНАЛА БУНКЕРА (Инвентарь, Крафт, Старина, НПС, Карта)
+       ======================================================================== -->
+  <section id="terminal-modal" class="hidden">
+    <div class="terminal-window">
+      <div class="terminal-tabs-header">
+        <button class="term-tab-btn active" data-tab="inventory" onclick="window.GAME.toggleModal('inventory')">
+          🎒 [I] ИНВЕНТАРЬ, КОСТЮМЫ И ОРУЖИЕ
+        </button>
+        <button class="term-tab-btn" data-tab="craft" onclick="window.GAME.toggleModal('craft')">
+          🔧 [C] КРАФТ, РЕМОНТ И «СТАРИНА»
+        </button>
+        <button class="term-tab-btn" data-tab="npcs" onclick="window.GAME.toggleModal('npcs')">
+          👥 [N] БУНКЕР И ВЫЖИВШИЕ (НПС)
+        </button>
+        <button class="term-tab-btn" data-tab="map" onclick="window.GAME.toggleModal('map')">
+          🗺️ [M] КАРТА (ТУМАН ВОЙНЫ)
+        </button>
+        <button class="term-tab-btn" data-tab="codex" onclick="window.GAME.toggleModal('codex')">
+          📖 [J] СЮЖЕТ И БЕСТИАРИЙ МУТАНТОВ
+        </button>
+        <button class="term-close-btn" onclick="window.GAME.closeModal()">ЗАКРЫТЬ [ESC]</button>
+      </div>
+      <div id="terminal-body"></div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       ФИНАЛЬНЫЙ ЭКРАН ПОБЕДЫ (Завершение Главы 5)
+       ======================================================================== -->
+  <section id="victory-modal" class="hidden">
+    <div class="menu-container" style="grid-template-columns: 1fr; max-width: 720px; text-align: center;">
+      <div>
+        <div class="menu-header-tag">ПРОТОКОЛ «ВОЗРОЖДЕНИЕ РОДИНЫ» АКТИВИРОВАН</div>
+        <h2 class="menu-title">РАДИОМАЯК УРАЛА ЗАПУЩЕН!<br/>ЧЕЛОВЕЧЕСТВО БУДЕТ ЖИТЬ</h2>
+        <p class="menu-subtitle" style="font-size:14.5px; color:#e2e8f0; margin:16px 0;">
+          Артём Волков (28 лет) уничтожил альфа-колосса «Химера-19» и ввёл коды доступа на Главной Телевышке.
+          Мощный КВ-сигнал бункера «Заслон-19» пробил ионосферную пелену ядерной зимы. На связь вышли подземные комплексы
+          Новосибирска, Алтая, Самары и Метрополитена Москвы — более 142 000 выживших объединились в единую сеть возрождения России!
+        </p>
+        <button class="menu-btn primary" style="text-align:center;" onclick="document.getElementById('victory-modal').classList.add('hidden'); window.GAME.paused = false;">
+          ПРОДОЛЖИТЬ СВОБОДНУЮ ИГРУ В БУНКЕРЕ И ПУСТОШИ
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <script src="lib/three.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/cutscene.js"></script>
+  <script src="js/world3d.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
