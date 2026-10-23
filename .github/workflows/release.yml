@@ -1,0 +1,31 @@
+name: Attach Release Assets
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  upload-release-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload EXE and ZIP to GitHub Release v1.0.0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! gh release view v1.0.0 >/dev/null 2>&1; then
+            gh release create v1.0.0 --title "☢ БУНКЕР «ЗАСЛОН-19»: ПЕПЕЛ УРАЛА — v1.0.0" --notes "Автоматическая сборка релиза"
+          fi
+          gh release upload v1.0.0 \
+            release/Zaslon19_Bunker.exe \
+            release/Zaslon19_Nuclear_Shelter_Win64_v1.0.0.zip \
+            release/Zaslon19_Standalone.html \
+            assets/icon.ico \
+            --clobber
